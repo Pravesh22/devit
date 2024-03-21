@@ -53,7 +53,7 @@ vit=l task=fsod shot=10 bash scripts/train.sh
 # one-shot env var `split = 1 / 2 / 3 / 4`
 vit=l task=osod split=1 bash script/train.sh
 
-# detectron2 options can be provided through args, e.g.,
+# detectron2_trb options can be provided through args, e.g.,
 task=ovd dataset=lvis bash scripts/train.sh MODEL.MASK_ON True # train lvis with mask head
 
 # another env var is `num_gpus = 1 / 2 ...`, used to control

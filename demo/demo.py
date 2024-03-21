@@ -1,36 +1,30 @@
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import torch
+
 torch.set_grad_enabled(False)
 import numpy as np
 import fire
 import os.path as osp
-from detectron2.config import get_cfg
-import detectron2.data.transforms as T
-import detectron2.data.detection_utils as utils
-from tools.train_net import Trainer, DetectionCheckpointer
+from detectron2_trb.config import get_cfg
+import detectron2_trb.data.transforms as T
+import detectron2_trb.data.detection_utils as utils
+from tools.train_net import Trainer
 from glob import glob
 
-import torchvision as tv
-from torchvision.utils import draw_bounding_boxes
+from torchvision.utils import draw_bounding_boxes, _generate_color_palette
 from torchvision.transforms.functional import to_pil_image
-import matplotlib.pyplot as plt
 
-import matplotlib.colors
 import seaborn as sns
 import torchvision.ops as ops
-from torchvision.ops import box_area, box_iou
+from torchvision.ops import box_area
 import random
 
-import collections
-import math
-import pathlib
 import warnings
-from itertools import repeat
-from types import FunctionType
-from typing import Any, BinaryIO, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from copy import copy
@@ -56,15 +50,16 @@ def assign_colors(pred_classes, label_names, seed=1):
     colors = [class2color[label_names[cid]] for cid in pred_classes.tolist()]
     return colors
 
+
 def draw_bounding_boxes(
-    image: torch.Tensor,
-    boxes: torch.Tensor,
-    labels: Optional[List[str]] = None,
-    colors: Optional[Union[List[Union[str, Tuple[int, int, int]]], str, Tuple[int, int, int]]] = None,
-    fill: Optional[bool] = False,
-    width: int = 1,
-    font: Optional[str] = None,
-    font_size: Optional[int] = None,
+        image: torch.Tensor,
+        boxes: torch.Tensor,
+        labels: Optional[List[str]] = None,
+        colors: Optional[Union[List[Union[str, Tuple[int, int, int]]], str, Tuple[int, int, int]]] = None,
+        fill: Optional[bool] = False,
+        width: int = 1,
+        font: Optional[str] = None,
+        font_size: Optional[int] = None,
 ) -> torch.Tensor:
     # if not torch.jit.is_scripting() and not torch.jit.is_tracing():
     #     _log_api_usage_once(draw_bounding_boxes)
@@ -140,6 +135,7 @@ def draw_bounding_boxes(
 
     return torch.from_numpy(np.array(img_to_draw)).permute(2, 0, 1).to(dtype=torch.uint8)
 
+
 def list_replace(lst, old=1, new=10):
     """replace list elements (inplace)"""
     i = -1
@@ -154,19 +150,19 @@ def list_replace(lst, old=1, new=10):
 
 
 def main(
-        config_file="configs/open-vocabulary/lvis/vitl.yaml", 
+        config_file="configs/open-vocabulary/lvis/vitl.yaml",
         rpn_config_file="configs/RPN/mask_rcnn_R_50_FPN_1x.yaml",
-        model_path="weights/trained/open-vocabulary/lvis/vitl_0069999.pth", 
+        model_path="/home/dell/Documents/devit-weights/trained-20240320T072945Z-007/trained/open-vocabulary/lvis/vitl_0069999.pth",
 
-        image_dir='demo/input', 
-        output_dir='demo/output', 
+        image_dir='/home/dell/Documents/office_work/anydone_organization/devit/demo/input',
+        output_dir='/home/dell/Documents/office_work/anydone_organization/devit/demo/output/',
         category_space="demo/ycb_prototypes.pth",
         device='cpu',
         overlapping_mode=True,
         topk=1,
         output_pth=False,
         threshold=0.45
-    ):
+):
     assert osp.abspath(image_dir) != osp.abspath(output_dir)
     os.makedirs(output_dir, exist_ok=True)
 
@@ -177,11 +173,12 @@ def main(
     config.MODEL.MASK_ON = True
 
     config.freeze()
-    
+
     augs = utils.build_augmentation(config, False)
-    augmentations = T.AugmentationList(augs) 
+    augmentations = T.AugmentationList(augs)
 
     # building models
+    print("demo device", device)
     model = Trainer.build_model(config).to(device)
     model.load_state_dict(torch.load(model_path, map_location=device)['model'])
     model.eval()
@@ -191,16 +188,20 @@ def main(
         category_space = torch.load(category_space)
         model.label_names = category_space['label_names']
         model.test_class_weight = category_space['prototypes'].to(device)
-        
-    label_names =  model.label_names
-    if 'mini soccer' in label_names: # for YCB
-        label_names = list_replace(label_names, old='mini soccer', new='ball')
 
-    for img_file in glob(osp.join(image_dir, '*')):
-        base_filename = osp.splitext(osp.basename(img_file))[0]
+    label_names = model.label_names
+    if 'mini soccer' in label_names:  # for YCB
+        label_names = list_replace(label_names, old='mini soccer', new='ball')
+    print("output dir", output_dir)
+
+    # for img_file in glob(osp.join(image_dir, '*')):
+    for img_file in os.listdir(image_dir):
+        # base_filename = osp.splitext(osp.basename(img_file))[0]
+        img_abs_path = os.path.join(image_dir, img_file)
+        print("base filename", img_file)
 
         dataset_dict = {}
-        image = utils.read_image(img_file, format="RGB")
+        image = utils.read_image(img_abs_path, format="RGB")
         dataset_dict["height"], dataset_dict["width"] = image.shape[0], image.shape[1]
 
         aug_input = T.AugInput(image)
@@ -212,11 +213,12 @@ def main(
         output = model(batched_inputs)[0]
         output['label_names'] = model.label_names
         if output_pth:
-            torch.save(output, osp.join(output_dir, base_filename + '.pth'))
+            torch.save(output, osp.join(output_dir, img_file + '.pth'))
 
         # visualize output
         instances = output['instances']
         boxes, pred_classes, scores = filter_boxes(instances, threshold=threshold)
+        print(boxes, pred_classes, scores)
 
         if overlapping_mode:
             # remove some highly overlapped predictions
@@ -232,18 +234,19 @@ def main(
             for c in torch.unique(pred_classes).tolist():
                 box_id_indexes = (pred_classes == c).nonzero().flatten().tolist()
                 for i in range(len(box_id_indexes)):
-                    for j in range(i+1, len(box_id_indexes)):
+                    for j in range(i + 1, len(box_id_indexes)):
                         bid1 = box_id_indexes[i]
                         bid2 = box_id_indexes[j]
                         arr1 = boxes[bid1].numpy()
                         arr2 = boxes[bid2].numpy()
                         a1 = np.prod(arr1[2:] - arr1[:2])
                         a2 = np.prod(arr2[2:] - arr2[:2])
-                        top_left = np.maximum(arr1[:2], arr2[:2]) # [[x, y]]
-                        bottom_right = np.minimum(arr1[2:], arr2[2:]) # [[x, y]]
+                        top_left = np.maximum(arr1[:2], arr2[:2])  # [[x, y]]
+                        bottom_right = np.minimum(arr1[2:], arr2[2:])  # [[x, y]]
                         wh = bottom_right - top_left
                         ia = wh[0].clip(0) * wh[1].clip(0)
-                        if ia >= 0.9 * min(a1, a2): # same class overlapping case, and larger one is much larger than small
+                        if ia >= 0.9 * min(a1,
+                                           a2):  # same class overlapping case, and larger one is much larger than small
                             if a1 >= a2:
                                 if bid2 in indexes:
                                     indexes.remove(bid2)
@@ -254,8 +257,13 @@ def main(
             boxes = boxes[indexes]
             pred_classes = pred_classes[indexes]
         colors = assign_colors(pred_classes, label_names, seed=4)
-        output = to_pil_image(draw_bounding_boxes(torch.as_tensor(image).permute(2, 0, 1), boxes, labels=[label_names[cid] for cid in pred_classes.tolist()], colors=colors))
-        output.save(osp.join(output_dir, base_filename + '.out.jpg'))
+        output = to_pil_image(draw_bounding_boxes(torch.as_tensor(image).permute(2, 0, 1), boxes,
+                                                  labels=[label_names[cid] for cid in pred_classes.tolist()],
+                                                  colors=colors))
+        print("output dir", output_dir)
+        print("base filename", img_file)
+        print("output img", output)
+        output.save(osp.join(output_dir, img_file + '.out.jpg'))
 
 
 if __name__ == "__main__":

@@ -1,13 +1,13 @@
 import torch
 import math
-import detectron2.data.transforms as T
+import detectron2_trb.data.transforms as T
 from fvcore.transforms.transform import (
     PadTransform,
     Transform,
     TransformList
 )
 
-from detectron2.data.transforms.augmentation import Augmentation
+from detectron2_trb.data.transforms.augmentation import Augmentation
 
 class SizeDivisibilityPad(Augmentation):
 

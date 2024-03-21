@@ -11,8 +11,8 @@ import io
 import os
 
 import numpy as np
-from detectron2.data import DatasetCatalog, MetadataCatalog
-from detectron2.structures import BoxMode
+from detectron2_trb.data import DatasetCatalog, MetadataCatalog
+from detectron2_trb.structures import BoxMode
 from iopath.common.file_io import PathManager as PathManagerBase
 from pycocotools.coco import COCO
 

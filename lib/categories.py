@@ -1,6 +1,6 @@
-from detectron2.data.datasets.coco_zeroshot_categories import COCO_SEEN_CLS, \
+from detectron2_trb.data.datasets.coco_zeroshot_categories import COCO_SEEN_CLS, \
     COCO_UNSEEN_CLS, COCO_OVD_ALL_CLS
-from detectron2.data import MetadataCatalog
+from detectron2_trb.data import MetadataCatalog
 
 coco17_all_classes = MetadataCatalog.get('coco_2017_val').thing_classes
 

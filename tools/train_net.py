@@ -4,14 +4,14 @@
 A main training script.
 
 This scripts reads a given config file and runs the training or evaluation.
-It is an entry point that is made to train standard models in detectron2.
+It is an entry point that is made to train standard models in detectron2_trb.
 
 In order to let one script support training of many models,
 this script contains logic that are specific to these built-in models and therefore
 may not be suitable for your own project.
 For example, your research project perhaps only needs a single "evaluator".
 
-Therefore, we recommend you to use detectron2 as an library and take
+Therefore, we recommend you to use detectron2_trb as an library and take
 this file as an example of how to use the library.
 You may want to write your own script with your datasets and other customizations.
 """
@@ -23,12 +23,12 @@ import logging
 from collections import OrderedDict
 import torch
 
-import detectron2.utils.comm as comm
-from detectron2.checkpoint import DetectionCheckpointer
-from detectron2.config import get_cfg
-from detectron2.data import MetadataCatalog
-from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
-from detectron2.evaluation import (
+import detectron2_trb.utils.comm as comm
+from detectron2_trb.checkpoint import DetectionCheckpointer
+from detectron2_trb.config import get_cfg
+from detectron2_trb.data import MetadataCatalog
+from detectron2_trb.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
+from detectron2_trb.evaluation import (
     CityscapesInstanceEvaluator,
     CityscapesSemSegEvaluator,
     COCOEvaluator,
@@ -39,7 +39,7 @@ from detectron2.evaluation import (
     SemSegEvaluator,
     verify_results,
 )
-from detectron2.modeling import GeneralizedRCNNWithTTA
+from detectron2_trb.modeling import GeneralizedRCNNWithTTA
 
 #os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import torch.multiprocessing
@@ -55,8 +55,8 @@ from collections import defaultdict
 
 import numpy as np
 
-from detectron2.evaluation.evaluator import DatasetEvaluator
-from detectron2.data.datasets.coco_zeroshot_categories import COCO_SEEN_CLS, \
+from detectron2_trb.evaluation.evaluator import DatasetEvaluator
+from detectron2_trb.data.datasets.coco_zeroshot_categories import COCO_SEEN_CLS, \
     COCO_UNSEEN_CLS, COCO_OVD_ALL_CLS
     
 from sklearn.metrics import precision_recall_curve
@@ -137,7 +137,7 @@ class Trainer(DefaultTrainer):
 
     @classmethod
     def test_with_TTA(cls, cfg, model):
-        logger = logging.getLogger("detectron2.trainer")
+        logger = logging.getLogger("detectron2_trb.trainer")
         # In the end of training, run an evaluation with TTA
         # Only support some R-CNN models.
         logger.info("Running inference with test-time augmentation ...")

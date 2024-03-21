@@ -1,7 +1,7 @@
 _BASE_: "../../Base-RCNN-C4.yaml"
 DE:
-  CLASS_PROTOTYPES: "weights/initial/open-vocabulary/prototypes/coco/class_prototypes_base.vitl14.pth,weights/initial/open-vocabulary/prototypes/coco/class_prototypes_novel.vitl14.pth"
-  BG_PROTOTYPES: "weights/initial/background/background_prototypes.vitl14.pth"
+  CLASS_PROTOTYPES: "/home/dell/Documents/devit-weights/open-vocabulary-20240320T093510Z-001/open-vocabulary/prototypes/coco/class_prototypes_base.vitl14.pth,/home/dell/Documents/devit-weights/open-vocabulary-20240320T093510Z-001/open-vocabulary/prototypes/coco/class_prototypes_novel.vitl14.pth"
+  BG_PROTOTYPES: "/home/dell/Documents/devit-weights/background-20240320T111734Z-001/background/background_prototypes.vitl14.pth"
   BG_CLS_LOSS_WEIGHT: 0.2
   TOPK: 10
 

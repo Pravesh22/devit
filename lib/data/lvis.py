@@ -1,7 +1,7 @@
 import os
 import os.path as osp
 import torch
-from detectron2.data import DatasetCatalog, MetadataCatalog
+from detectron2_trb.data import DatasetCatalog, MetadataCatalog
 
 root = os.environ.get('DETECTRON2_DATASETS', 'datasets')
 

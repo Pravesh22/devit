@@ -9,12 +9,12 @@ import os.path as osp
 sys.path.append(osp.join(osp.dirname(__file__), ".."))
 
 
-from detectron2.data import build_detection_test_loader, get_detection_dataset_dicts, DatasetCatalog, MetadataCatalog
-from detectron2.data import transforms as T
+from detectron2_trb.data import build_detection_test_loader, get_detection_dataset_dicts, DatasetCatalog, MetadataCatalog
+from detectron2_trb.data import transforms as T
 from tqdm.auto import tqdm
 from torchvision.transforms import functional as tvF
 import torchvision as tv
-from detectron2.data.dataset_mapper import DatasetMapper
+from detectron2_trb.data.dataset_mapper import DatasetMapper
 
 from lib.detr_mapper import DetrDatasetMapper
 from fast_pytorch_kmeans import KMeans

@@ -6,7 +6,7 @@ import fire
 from tqdm.auto import tqdm
 
 from torch.utils.data import DataLoader
-from detectron2.data import MetadataCatalog, DatasetCatalog
+from detectron2_trb.data import MetadataCatalog, DatasetCatalog
 from collections import defaultdict, Counter
 
 import lib.data.fewshot

@@ -16,7 +16,7 @@ assert torch_ver >= [1, 6], "Requires PyTorch >= 1.6"
 
 
 def get_version():
-    init_py_path = path.join(path.abspath(path.dirname(__file__)), "detectron2", "__init__.py")
+    init_py_path = path.join(path.abspath(path.dirname(__file__)), "detectron2_trb", "__init__.py")
     init_py = open(init_py_path, "r").readlines()
     version_line = [l.strip() for l in init_py if l.startswith("__version__")][0]
     version = version_line.split("=")[-1].strip().strip("'\"")
@@ -41,7 +41,7 @@ def get_version():
 
 def get_extensions():
     this_dir = path.dirname(path.abspath(__file__))
-    extensions_dir = path.join(this_dir, "detectron2", "layers", "csrc")
+    extensions_dir = path.join(this_dir, "detectron2_trb", "layers", "csrc")
 
     main_source = path.join(extensions_dir, "vision.cpp")
     sources = glob.glob(path.join(extensions_dir, "**", "*.cpp"))
@@ -69,7 +69,7 @@ def get_extensions():
         hipify_python.hipify(
             project_directory=this_dir,
             output_directory=this_dir,
-            includes="/detectron2/layers/csrc/*",
+            includes="/detectron2_trb/layers/csrc/*",
             show_detailed=True,
             is_pytorch_extension=True,
         )
@@ -79,12 +79,12 @@ def get_extensions():
         )
 
         shutil.copy(
-            "detectron2/layers/csrc/box_iou_rotated/box_iou_rotated_utils.h",
-            "detectron2/layers/csrc/box_iou_rotated/hip/box_iou_rotated_utils.h",
+            "detectron2_trb/layers/csrc/box_iou_rotated/box_iou_rotated_utils.h",
+            "detectron2_trb/layers/csrc/box_iou_rotated/hip/box_iou_rotated_utils.h",
         )
         shutil.copy(
-            "detectron2/layers/csrc/deformable/deform_conv.h",
-            "detectron2/layers/csrc/deformable/hip/deform_conv.h",
+            "detectron2_trb/layers/csrc/deformable/deform_conv.h",
+            "detectron2_trb/layers/csrc/deformable/hip/deform_conv.h",
         )
 
         sources = [main_source] + sources
@@ -139,7 +139,7 @@ def get_extensions():
 
     ext_modules = [
         extension(
-            "detectron2._C",
+            "detectron2_trb._C",
             sources,
             include_dirs=include_dirs,
             define_macros=define_macros,
@@ -153,13 +153,13 @@ def get_extensions():
 def get_model_zoo_configs() -> List[str]:
     """
     Return a list of configs to include in package for model zoo. Copy over these configs inside
-    detectron2/model_zoo.
+    detectron2_trb/model_zoo.
     """
 
     # Use absolute paths while symlinking.
     source_configs_dir = path.join(path.dirname(path.realpath(__file__)), "configs")
     destination = path.join(
-        path.dirname(path.realpath(__file__)), "detectron2", "model_zoo", "configs"
+        path.dirname(path.realpath(__file__)), "detectron2_trb", "model_zoo", "configs"
     )
     # Symlink the config directory inside package to have a cleaner pip install.
 
@@ -184,15 +184,15 @@ def get_model_zoo_configs() -> List[str]:
 
 
 # For projects that are relative small and provide features that are very close
-# to detectron2's core functionalities, we install them under detectron2.projects
+# to detectron2_trb's core functionalities, we install them under detectron2_trb.projects
 PROJECTS = {
-#     "detectron2.projects.point_rend": "projects/PointRend/point_rend",
-#     "detectron2.projects.deeplab": "projects/DeepLab/deeplab",
-#     "detectron2.projects.panoptic_deeplab": "projects/Panoptic-DeepLab/panoptic_deeplab",
+#     "detectron2_trb.projects.point_rend": "projects/PointRend/point_rend",
+#     "detectron2_trb.projects.deeplab": "projects/DeepLab/deeplab",
+#     "detectron2_trb.projects.panoptic_deeplab": "projects/Panoptic-DeepLab/panoptic_deeplab",
 }
 
 setup(
-    name="detectron2",
+    name="detectron2_trb",
     version=get_version(),
     author="FAIR",
     url="https://github.com/facebookresearch/detectron2",
@@ -200,7 +200,7 @@ setup(
     "platform for object detection and segmentation.",
     packages=find_packages(exclude=("configs", "tests*")) + list(PROJECTS.keys()),
     package_dir=PROJECTS,
-    package_data={"detectron2.model_zoo": get_model_zoo_configs()},
+    package_data={"detectron2_trb.model_zoo": get_model_zoo_configs()},
     python_requires=">=3.6",
     install_requires=[
         # Do not add opencv here. Just like pytorch, user should install

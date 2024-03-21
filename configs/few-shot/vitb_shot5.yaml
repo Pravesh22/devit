@@ -1,7 +1,7 @@
 _BASE_: "../Base-RCNN-C4.yaml"
 DE:
-  CLASS_PROTOTYPES: "weights/initial/few-shot/prototypes/fs_coco14_base_train.vitb14.pkl,weights/initial/few-shot/prototypes/fs_coco_trainval_novel_5shot.vitb14.pkl"
-  BG_PROTOTYPES: "weights/initial/background/background_prototypes.vitb14.pth"
+  CLASS_PROTOTYPES: "/home/dell/Documents/devit-weights/few-shot-20240321T064157Z-001/few-shot/prototypes/fs_coco14_base_train.vitb14.pkl,/home/dell/Documents/devit-weights/few-shot-20240321T064157Z-001/few-shot/prototypes/fs_coco_trainval_novel_5shot.vitb14.pkl"
+  BG_PROTOTYPES: "/home/dell/Documents/devit-weights/background-20240320T111734Z-001/background/background_prototypes.vitb14.pth"
   BG_CLS_LOSS_WEIGHT: 0.2
   TOPK: 10
 

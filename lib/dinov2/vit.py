@@ -17,8 +17,8 @@ import torch
 import torch.nn as nn
 import torch.utils.checkpoint
 from torch.nn.init import trunc_normal_
-from detectron2.modeling.backbone import Backbone
-# Backbone = nn.Module # * for bypassing deps on detectron2
+from detectron2_trb.modeling.backbone import Backbone
+# Backbone = nn.Module # * for bypassing deps on detectron2_trb
 from torch.cuda.amp import autocast
 
 from .layers import Mlp, PatchEmbed, SwiGLUFFNFused, MemEffAttention, NestedTensorBlock as Block

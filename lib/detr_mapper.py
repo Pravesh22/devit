@@ -7,8 +7,8 @@ import logging
 import numpy as np
 import torch
 
-from detectron2.data import detection_utils as utils
-from detectron2.data import transforms as T
+from detectron2_trb.data import detection_utils as utils
+from detectron2_trb.data import transforms as T
 
 
 class DetrDatasetMapper:
@@ -31,7 +31,7 @@ class DetrDatasetMapper:
         mask_on (bool): Whether to return the mask annotations. Default: False.
         img_format (str): The format of the input raw images. Default: RGB.
 
-    Because detectron2 did not implement `RandomSelect` augmentation. So we provide both `augmentation` and
+    Because detectron2_trb did not implement `RandomSelect` augmentation. So we provide both `augmentation` and
     `augmentation_with_crop` here and randomly apply one of them to the input raw images.
     """
 
@@ -63,7 +63,7 @@ class DetrDatasetMapper:
             dataset_dict (dict): Metadata of one image, in Detectron2 Dataset format.
 
         Returns:
-            dict: a format that builtin models in detectron2 accept
+            dict: a format that builtin models in detectron2_trb accept
         """
         dataset_dict = copy.deepcopy(dataset_dict)  # it will be modified by code below
         image = utils.read_image(dataset_dict["file_name"], format=self.img_format)
